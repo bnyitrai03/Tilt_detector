@@ -9,8 +9,10 @@ fejre állnunk a leolvasáshoz), tehát a kijelzőknek mindig a magasabban elhel
 valamint egy buzzert. Nyomógombok segítségével egy kritikus szög legyen beállítható, amelyet elérve a
 felhasználót a buzzer segítségével hangjelzéssel figyelmezteti. Ne feledkezzen el a gombok (szoftveres)
 pergésmentesítéséről!
+
 A kijelzők vezérlése is a mikrokontroller SPI portján keresztül történjen (sorosan), egy léptető regiszter
 alkalmazásával.
+
 Az áramkör megtervezése, megépítése és üzembe helyezése után készítsen el egy, az eszköz bemutatására
 szolgáló demonstrációs célú tesztprogram rendszert, amely magában foglalja a megfelelő működést biztosító
 mikrokontrolleres programot, illetve egy PC-s kliensprogramot. A mikrokontroller és a PC közötti kommunikációt
