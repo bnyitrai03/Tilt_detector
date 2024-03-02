@@ -17,7 +17,11 @@ mikrokontrolleres programot, illetve egy PC-s kliensprogramot. A mikrokontroller
 virtuális UART kommunikációval valósítsa meg USB-n keresztül.
 
 <ins>Ajánlott alkatrésztípusok:</ins>
+
 • Gyorsulásérzékelő modul: STEVAL-MKI178V2 (ST, tanszéki forrásból)
+
 • 7 szegmenses kijelző: FYS-3911BUHR-21 (Lomex 35-03-94)
+
 • Léptető regiszter: STP08CP05TTR (ST, tanszéki forrásból)
+
 • Nyomógomb: FSM4JSMA (Lomex 45-05-43, Farnell 3801305)
