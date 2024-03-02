@@ -16,7 +16,7 @@ szolgáló demonstrációs célú tesztprogram rendszert, amely magában foglalj
 mikrokontrolleres programot, illetve egy PC-s kliensprogramot. A mikrokontroller és a PC közötti kommunikációt
 virtuális UART kommunikációval valósítsa meg USB-n keresztül.
 
-<ins>Ajánlott alkatrésztípusok:</ins>
+**<ins>Ajánlott alkatrésztípusok:</ins>**
 
 • Gyorsulásérzékelő modul: STEVAL-MKI178V2 (ST, tanszéki forrásból)
 
