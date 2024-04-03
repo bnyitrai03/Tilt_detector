@@ -27,3 +27,6 @@ virtuális UART kommunikációval valósítsa meg USB-n keresztül.
 • Léptető regiszter: STP08CP05TTR (ST, tanszéki forrásból)
 
 • Nyomógomb: FSM4JSMA (Lomex 45-05-43, Farnell 3801305)
+
+# Hardver tervek
+![image](https://github.com/bnyitrai03/Tilt_detector/assets/126956031/1c6b67fa-e40d-46f7-a7b0-b9aaf6ccb050)
