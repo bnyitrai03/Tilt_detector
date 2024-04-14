@@ -1,0 +1,4 @@
+Change Component Footprint: Designator=U3 Old Footprint=FP-D0016A-IPC_A New Footprint=FP-D0016A-IPC_A
+Change Component Footprint: Designator=U6 Old Footprint=FP-D0016A-IPC_A New Footprint=FP-D0016A-IPC_A
+Change Component Footprint: Designator=S1 Old Footprint=FP-PS1440P02BT-MFG New Footprint=FP-PS1440P02BT-MFG
+Added Member To Class: ClassName=Accelo_7seg Member=Component R5 100

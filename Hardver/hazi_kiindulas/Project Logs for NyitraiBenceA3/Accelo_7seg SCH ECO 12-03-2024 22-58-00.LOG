@@ -1,0 +1,3 @@
+Change Component Footprint: Designator=U3 Old Footprint=FP-D0016A-IPC_A New Footprint=FP-D0016A-IPC_A
+Change Pin Designator/Name:  Old Designator=U1B-50 Old Name=PA12 New Designator =PB4 New Name=65
+Change Pin Designator/Name:  Old Designator=U1B-65 Old Name=PB4 New Designator =PA12 New Name=50

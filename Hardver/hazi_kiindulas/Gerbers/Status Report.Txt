@@ -1,0 +1,12 @@
+Output: NC Drill Files
+Type  : NC Drill
+From  : PCB Document [hazi_kiindulas.PcbDoc]
+   Generated File[NyitraiBenceA3.TXT]
+   Generated File[NyitraiBenceA3.LDP]
+   Generated File[NyitraiBenceA3.DRR]
+
+
+Files Generated   : 3
+Documents Printed : 0
+
+Finished Output Generation At 11:29:40 On 17/03/2024

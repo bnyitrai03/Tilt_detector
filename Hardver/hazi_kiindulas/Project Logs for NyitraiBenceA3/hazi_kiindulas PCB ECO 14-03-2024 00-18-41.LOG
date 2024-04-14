@@ -1,0 +1,8 @@
+Change component parameters: Designator = "B1" ("B1"); Footprint = "FP_BTN_SMD"; UniqueID = "\GVJWXRUO" ("\GVJWXRUO")
+Change component parameters (AddParameter): Name = "Name"; Value = " 45-05-43"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Reference"; Value = "3801305"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier"; Value = "Lomex"; VariantName = "[No Variations]"
+Change component parameters: Designator = "B2" ("B2"); Footprint = "FP_BTN_SMD"; UniqueID = "\XNRCDGRU" ("\XNRCDGRU")
+Change component parameters (AddParameter): Name = "Name"; Value = " 45-05-43"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Reference"; Value = "3801305"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier"; Value = "Lomex"; VariantName = "[No Variations]"

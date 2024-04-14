@@ -1,0 +1,3 @@
+Change Component Footprint: Designator=U3 Old Footprint=FP-D0016A-IPC_A New Footprint=FP-D0016A-IPC_A
+Added Member To Class: ClassName=Accelo_7seg Member=Component DS1 FYS-3911BUHR-21
+Added Member To Class: ClassName=Accelo_7seg Member=Component U3 ULN2003ADRG3
