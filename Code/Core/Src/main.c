@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "lsm6dsl.h"
 #include "stm32f4xx_nucleo_bus.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,6 +46,8 @@ SPI_HandleTypeDef hspi3;
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim10;
 
+UART_HandleTypeDef huart2;
+
 /* USER CODE BEGIN PV */
 LSM6DSL_Object_t Accelometer;
 LSM6DSL_Axes_t acc_axes;
@@ -57,6 +60,7 @@ static void MX_GPIO_Init(void);
 static void MX_SPI3_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM10_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 static void MEMS_Init(void);
 /* USER CODE END PFP */
@@ -96,9 +100,9 @@ void DisableDisplay() {
 }
 
 void LatchEnable() {
-	HAL_GPIO_WritePin(GPIOC, SS_7seg_Pin, GPIO_PIN_SET);
-	HAL_Delay(1);  // Short delay to ensure the latch pulse is detected
 	HAL_GPIO_WritePin(GPIOC, SS_7seg_Pin, GPIO_PIN_RESET);
+	HAL_Delay(1);  // Short delay to ensure the latch pulse is detected
+	HAL_GPIO_WritePin(GPIOC, SS_7seg_Pin, GPIO_PIN_SET);
 }
 
 
@@ -107,8 +111,10 @@ void Send7seg() {
 
 	HAL_SPI_Transmit(&hspi3, &display_8, 1, 1000);  // Send 1 byte per driver
 	LatchEnable();  // Latch data once all have been transmitted
-	EnableDisplay(); // Show it on display
 }
+
+/* USER CODE END 4 */
+
 
 /* USER CODE END 0 */
 
@@ -144,11 +150,17 @@ int main(void)
   MX_SPI3_Init();
   MX_TIM4_Init();
   MX_TIM10_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  BSP_SPI2_Init();
   //MEMS_Init();
 
-  HAL_TIM_Base_Start_IT(&htim4);
-  DisableDisplay();
+  //HAL_TIM_Base_Start_IT(&htim4); // measure accelometer
+  //EnableDisplay(); // Show it on display
+
+  uint8_t buf[] = {"Hello World!\n\r"};
+  uint8_t num = {0, 5, 10};
+  uint8_t i = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -157,12 +169,19 @@ int main(void)
   {
 	 if(read){
 		 read = 0;
-		//LSM6DSL_ACC_GetAxes(&Accelometer, &acc_axes); // test read the accelometer
-
-		 Send7seg(); // test the 7seg
+		LSM6DSL_ACC_GetAxes(&Accelometer, &acc_axes); // test read the accelometer
+		 read = 0;
+		 //Send7seg(); // test the 7seg
 	 }
-
-
+	 if(i == 0){
+		 HAL_UART_Transmit(&huart2, buf, sizeof(buf), HAL_MAX_DELAY);
+		 HAL_Delay(1000);
+	 }
+	 else{
+		 printf("%d %d %d\r\n", i, i+3, i+5);
+		 HAL_Delay(1000);
+	 }
+	 i += 5;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -182,29 +201,21 @@ void SystemClock_Config(void)
   /** Configure the main internal regulator output voltage
   */
   __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 180;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 4;
+  RCC_OscInitStruct.PLL.PLLN = 72;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLQ = 3;
   RCC_OscInitStruct.PLL.PLLR = 2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Activate the Over-Drive mode
-  */
-  if (HAL_PWREx_EnableOverDrive() != HAL_OK)
   {
     Error_Handler();
   }
@@ -215,10 +226,10 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -247,7 +258,7 @@ static void MX_SPI3_Init(void)
   hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi3.Init.NSS = SPI_NSS_SOFT;
-  hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi3.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -339,6 +350,39 @@ static void MX_TIM10_Init(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -372,14 +416,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : USART_TX_Pin USART_RX_Pin */
-  GPIO_InitStruct.Pin = USART_TX_Pin|USART_RX_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -406,22 +442,31 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(button2_GPIO_Port, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
 int32_t wrap_platform_read(uint8_t Address, uint8_t Reg, uint8_t *Bufp, uint16_t len){
+  uint32_t ret;
   Reg |= 0x80;
-  BSP_SPI2_Send(&Reg, 1);
-  BSP_SPI2_SendRecv(&Reg, Bufp, len);
-  return BSP_ERROR_NONE;
+  ret = BSP_SPI2_Send(&Reg, 1);
+  ret = BSP_SPI2_Recv(Bufp, len);
+  return ret;
 }
 
 int32_t wrap_platform_write(uint8_t Address, uint8_t Reg, uint8_t *Bufp, uint16_t len){
-  BSP_SPI2_Send(&Reg, 1);
-  BSP_SPI2_Send(Bufp, len);
-  return BSP_ERROR_NONE;
+  uint32_t ret;
+  ret = BSP_SPI2_Send(&Reg, 1);
+  ret = BSP_SPI2_Send(Bufp, len);
+  return ret;
 }
 
 static void MEMS_Init(void)
@@ -441,7 +486,7 @@ static void MEMS_Init(void)
   LSM6DSL_RegisterBusIO(&Accelometer, &io_ctx);
 
   /* Read the LSM6DSL WHO_AM_I register */
-  LSM6DSL_ReadID(&Accelometer, &id);
+  uint8_t ret = LSM6DSL_ReadID(&Accelometer, &id);
   if (id != LSM6DSL_ID) {
     Error_Handler();
   }
@@ -452,11 +497,17 @@ static void MEMS_Init(void)
   /* Configure the LSM6DSL accelerometer (ODR, scale and interrupt) */
   LSM6DSL_ACC_SetOutputDataRate(&Accelometer, 26.0f); /* 26 Hz */
   LSM6DSL_ACC_SetFullScale(&Accelometer, 4);          /* [-4000mg; +4000mg] */
-  LSM6DSL_ACC_Set_INT1_DRDY(&Accelometer, ENABLE);    /* Enable DRDY */
+  //LSM6DSL_ACC_Set_INT1_DRDY(&Accelometer, ENABLE);    /* Enable DRDY */
   LSM6DSL_ACC_GetAxesRaw(&Accelometer, &axes);        /* Clear DRDY */
 
   /* Start the LSM6DSL accelerometer */
   LSM6DSL_ACC_Enable(&Accelometer);
+}
+
+int _write(int fd, char * ptr, int len)
+{
+  HAL_UART_Transmit(&huart2, (uint8_t *) ptr, len, HAL_MAX_DELAY);
+  return len;
 }
 /* USER CODE END 4 */
 
