@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "E:\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\",
+  "WorkspaceRootPath": "C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|e:\\egyetem\\mikrokontroller_lab_software\\gui\\tilt_detector\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|c:\\users\\bence\\desktop\\egyetem\\mikrokontroller_lab_software\\gui\\tilt_detector\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|E:\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
@@ -24,11 +24,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "MainForm.cs",
-              "DocumentMoniker": "E:\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\MainForm.cs",
+              "DocumentMoniker": "C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\MainForm.cs",
               "RelativeDocumentMoniker": "MainForm.cs",
-              "ToolTip": "E:\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\MainForm.cs",
+              "ToolTip": "C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\MainForm.cs",
               "RelativeToolTip": "MainForm.cs",
-              "ViewState": "AQIAAEEAAAAAAAAAAAAIwG0AAAAmAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAEAAAAXAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-03T15:07:06.06Z",
               "EditorCaption": ""
@@ -37,12 +37,13 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "MainForm.cs [Design]",
-              "DocumentMoniker": "E:\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\MainForm.cs",
+              "DocumentMoniker": "C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\MainForm.cs",
               "RelativeDocumentMoniker": "MainForm.cs",
-              "ToolTip": "E:\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\MainForm.cs [Design]",
+              "ToolTip": "C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\MainForm.cs [Design]",
               "RelativeToolTip": "MainForm.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-03T18:46:21.556Z"
+              "WhenOpened": "2024-05-03T18:46:21.556Z",
+              "EditorCaption": " [Design]"
             }
           ]
         }

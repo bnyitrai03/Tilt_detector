@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v8.0": {
       "Tilt_detector/1.0.0": {
         "dependencies": {
+          "Syncfusion.Chart.Windows": "25.1.42",
           "System.IO.Ports": "8.0.0"
         },
         "runtime": {
@@ -65,6 +66,63 @@
             "rid": "osx-x64",
             "assetType": "native",
             "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Syncfusion.Chart.Base/25.1.42": {
+        "dependencies": {
+          "Syncfusion.Licensing": "25.1.42",
+          "Syncfusion.Shared.Base": "25.1.42"
+        },
+        "runtime": {
+          "lib/net6.0-windows7.0/Syncfusion.Chart.Base.dll": {
+            "assemblyVersion": "25.1.42.0",
+            "fileVersion": "25.1.42.0"
+          }
+        }
+      },
+      "Syncfusion.Chart.Windows/25.1.42": {
+        "dependencies": {
+          "Syncfusion.Chart.Base": "25.1.42",
+          "Syncfusion.Grouping.Base": "25.1.42",
+          "Syncfusion.Licensing": "25.1.42",
+          "Syncfusion.Shared.Base": "25.1.42"
+        },
+        "runtime": {
+          "lib/net6.0-windows7.0/Syncfusion.Chart.Windows.dll": {
+            "assemblyVersion": "25.1.42.0",
+            "fileVersion": "25.1.42.0"
+          }
+        }
+      },
+      "Syncfusion.Grouping.Base/25.1.42": {
+        "dependencies": {
+          "Syncfusion.Licensing": "25.1.42",
+          "Syncfusion.Shared.Base": "25.1.42"
+        },
+        "runtime": {
+          "lib/net6.0-windows7.0/Syncfusion.Grouping.Base.dll": {
+            "assemblyVersion": "25.1.42.0",
+            "fileVersion": "25.1.42.0"
+          }
+        }
+      },
+      "Syncfusion.Licensing/25.1.42": {
+        "runtime": {
+          "lib/net8.0/Syncfusion.Licensing.dll": {
+            "assemblyVersion": "25.1.42.0",
+            "fileVersion": "25.1.42.0"
+          }
+        }
+      },
+      "Syncfusion.Shared.Base/25.1.42": {
+        "dependencies": {
+          "Syncfusion.Licensing": "25.1.42"
+        },
+        "runtime": {
+          "lib/net6.0-windows7.0/Syncfusion.Shared.Base.dll": {
+            "assemblyVersion": "25.1.42.0",
+            "fileVersion": "25.1.42.0"
           }
         }
       },
@@ -142,6 +200,41 @@
       "sha512": "sha512-IcfB4jKtM9pkzP9OpYelEcUX1MiDt0IJPBh3XYYdEISFF+6Mc+T8WWi0dr9wVh1gtcdVjubVEIBgB8BHESlGfQ==",
       "path": "runtime.osx-x64.runtime.native.system.io.ports/8.0.0",
       "hashPath": "runtime.osx-x64.runtime.native.system.io.ports.8.0.0.nupkg.sha512"
+    },
+    "Syncfusion.Chart.Base/25.1.42": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-F2Teccbgp5Rpwqh1P6XSo9BBHVN2LgVgUSZLtwgNnPgg9CyECoqyidUPafq25QDWm60L0GShfUHd8SuHbT7QOw==",
+      "path": "syncfusion.chart.base/25.1.42",
+      "hashPath": "syncfusion.chart.base.25.1.42.nupkg.sha512"
+    },
+    "Syncfusion.Chart.Windows/25.1.42": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-X9cDpXZ7EKZqGx6pET8rpmnGQElGwmIWmqMlzx/w5Tq+JoYG6x0X9n0u/5cKniVOQqu2qDj1yGDWwAwsg415uw==",
+      "path": "syncfusion.chart.windows/25.1.42",
+      "hashPath": "syncfusion.chart.windows.25.1.42.nupkg.sha512"
+    },
+    "Syncfusion.Grouping.Base/25.1.42": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VqhLe1/8O+A7fTaMAdECxSJsS9oMNom6bX8blldm1Ctf9f5rC5HUdypVBlph9XKWVOaNL5Ai2RP9QUhxhTK52Q==",
+      "path": "syncfusion.grouping.base/25.1.42",
+      "hashPath": "syncfusion.grouping.base.25.1.42.nupkg.sha512"
+    },
+    "Syncfusion.Licensing/25.1.42": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-6jOdnRMW6bK2XHggLxqq2GJaNS3HYVunTECMP/+YyesrAOdOF8ewelh+PaiHeyVbzc/cfjxI/pUKgRJsXR+1iA==",
+      "path": "syncfusion.licensing/25.1.42",
+      "hashPath": "syncfusion.licensing.25.1.42.nupkg.sha512"
+    },
+    "Syncfusion.Shared.Base/25.1.42": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-InOg6mMa5eHuXPatyK1kFnJNvGIWxVttWPE4rJ7fyRSSNDImb41Y2xfvbLmz9YTXc8dvDhfuIAELsG2ldh8kSQ==",
+      "path": "syncfusion.shared.base/25.1.42",
+      "hashPath": "syncfusion.shared.base.25.1.42.nupkg.sha512"
     },
     "System.IO.Ports/8.0.0": {
       "type": "package",

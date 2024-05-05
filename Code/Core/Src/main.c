@@ -21,9 +21,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lsm6dsl.h"
-#include "stm32f4xx_nucleo_bus.h"
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "accelerometer.h"
+#include "UI.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,6 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,9 +52,12 @@ TIM_HandleTypeDef htim10;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-LSM6DSL_Object_t Accelometer;
-LSM6DSL_Axes_t acc_axes;
-volatile uint8_t read = 0;
+volatile uint8_t measure = 0;
+volatile uint16_t limit = 90;
+int16_t degree;
+int16_t current_limit = 90;
+int16_t previous_limit = 90;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -62,7 +68,7 @@ static void MX_TIM4_Init(void);
 static void MX_TIM10_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
-static void MEMS_Init(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -70,8 +76,8 @@ static void MEMS_Init(void);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	//HAL_GPIO_TogglePin(GPIOA, LED_Pin);
 
-	if (htim->Instance == TIM4){
-		read = 1;
+	if (htim->Instance == TIM4){ // measuring the accelerometer
+		measure = 1;
 	}
 
 	if (htim->Instance == TIM10){
@@ -81,12 +87,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-	if (GPIO_Pin == button1_Pin) {
-		HAL_TIM_Base_Start_IT(&htim10);
+	if (GPIO_Pin == button_up_Pin) {
+		limit++;
 	}
 
-	if (GPIO_Pin == button2_Pin) {
-		HAL_TIM_Base_Stop_IT(&htim10);
+	if (GPIO_Pin == button_down_Pin) {
+		limit--;
 	}
 
 }
@@ -155,33 +161,41 @@ int main(void)
   BSP_SPI2_Init();
   //MEMS_Init();
 
-  //HAL_TIM_Base_Start_IT(&htim4); // measure accelometer
+  HAL_TIM_Base_Start_IT(&htim4); // measure accelerometer every 100 ms
   //EnableDisplay(); // Show it on display
 
-  uint8_t buf[] = {"Hello World!\n\r"};
-  uint8_t num = {0, 5, 10};
-  uint8_t i = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 if(read){
-		 read = 0;
-		LSM6DSL_ACC_GetAxes(&Accelometer, &acc_axes); // test read the accelometer
-		 read = 0;
-		 //Send7seg(); // test the 7seg
-	 }
-	 if(i == 0){
-		 HAL_UART_Transmit(&huart2, buf, sizeof(buf), HAL_MAX_DELAY);
-		 HAL_Delay(1000);
-	 }
-	 else{
-		 printf("%d %d %d\r\n", i, i+3, i+5);
-		 HAL_Delay(1000);
-	 }
-	 i += 5;
+		if (measure) {
+			measure = 0;
+
+			current_limit = limit;
+			degree = Measure_degree();
+
+			if(abs(degree) > current_limit){
+				Start_buzzer();
+			}
+			else{
+				Stop_buzzer();
+			}
+
+			printf("%d\r\n", degree);        // Send data to the PC
+			printf("%d\r\n", current_limit);
+
+			if(previous_limit != current_limit){
+				Display_limit(current_limit);
+			}
+			else{
+				Display_degree(degree);
+			}
+
+			previous_limit = current_limit;
+		}
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -430,17 +444,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : button1_Pin */
-  GPIO_InitStruct.Pin = button1_Pin;
+  /*Configure GPIO pin : button_up_Pin */
+  GPIO_InitStruct.Pin = button_up_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(button1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(button_up_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : button2_Pin */
-  GPIO_InitStruct.Pin = button2_Pin;
+  /*Configure GPIO pin : button_down_Pin */
+  GPIO_InitStruct.Pin = button_down_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(button2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(button_down_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
@@ -454,56 +468,8 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-int32_t wrap_platform_read(uint8_t Address, uint8_t Reg, uint8_t *Bufp, uint16_t len){
-  uint32_t ret;
-  Reg |= 0x80;
-  ret = BSP_SPI2_Send(&Reg, 1);
-  ret = BSP_SPI2_Recv(Bufp, len);
-  return ret;
-}
 
-int32_t wrap_platform_write(uint8_t Address, uint8_t Reg, uint8_t *Bufp, uint16_t len){
-  uint32_t ret;
-  ret = BSP_SPI2_Send(&Reg, 1);
-  ret = BSP_SPI2_Send(Bufp, len);
-  return ret;
-}
-
-static void MEMS_Init(void)
-{
-  LSM6DSL_IO_t io_ctx;
-  uint8_t id;
-  LSM6DSL_AxesRaw_t axes;
-
-  /* Link SPI functions to the LSM6DSL driver */
-  io_ctx.BusType   = LSM6DSL_SPI_4WIRES_BUS;
-  io_ctx.Address   = 0;
-  io_ctx.Init    = BSP_SPI2_Init;
-  io_ctx.DeInit   = BSP_SPI2_DeInit;
-  io_ctx.ReadReg   = wrap_platform_read;
-  io_ctx.WriteReg  = wrap_platform_write;
-  io_ctx.GetTick   = BSP_GetTick;
-  LSM6DSL_RegisterBusIO(&Accelometer, &io_ctx);
-
-  /* Read the LSM6DSL WHO_AM_I register */
-  uint8_t ret = LSM6DSL_ReadID(&Accelometer, &id);
-  if (id != LSM6DSL_ID) {
-    Error_Handler();
-  }
-
-  /* Initialize the LSM6DSL sensor */
-  LSM6DSL_Init(&Accelometer);
-
-  /* Configure the LSM6DSL accelerometer (ODR, scale and interrupt) */
-  LSM6DSL_ACC_SetOutputDataRate(&Accelometer, 26.0f); /* 26 Hz */
-  LSM6DSL_ACC_SetFullScale(&Accelometer, 4);          /* [-4000mg; +4000mg] */
-  //LSM6DSL_ACC_Set_INT1_DRDY(&Accelometer, ENABLE);    /* Enable DRDY */
-  LSM6DSL_ACC_GetAxesRaw(&Accelometer, &axes);        /* Clear DRDY */
-
-  /* Start the LSM6DSL accelerometer */
-  LSM6DSL_ACC_Enable(&Accelometer);
-}
-
+// Redirect the printf to COM port
 int _write(int fd, char * ptr, int len)
 {
   HAL_UART_Transmit(&huart2, (uint8_t *) ptr, len, HAL_MAX_DELAY);

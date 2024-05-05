@@ -26,40 +26,60 @@ namespace Tilt_detector
 
         private void ProccesData(object arg)
         {
-            while (communicate)
+            try
             {
-                bool newdata = false;
-                string tilt = string.Empty;
-
-                while (!newdata)
+                while (communicate)
                 {
-                    tilt = serialport.ReadLine();
-                    if (!string.IsNullOrEmpty(tilt))
+                    bool newdata = false;
+                    string tilt = string.Empty;
+                    string limit = string.Empty;
+
+                    while (!newdata)
                     {
-                        newdata = true;
+                        tilt = serialport.ReadLine();
+                        limit = serialport.ReadLine();
+                        if (!string.IsNullOrEmpty(tilt) && !string.IsNullOrEmpty(limit))
+                        {
+                            newdata = true;
+                        }
                     }
+
+                    // Update the UI from the main thread
+                    DisplayCOM(tilt, limit);
+
+                    Thread.Sleep(400);
                 }
-
-                // Update the UI from the main thread
-                DisplayCOM(tilt);
-
-                Thread.Sleep(100);
             }
-
-            // Finnish the current data processing
+            catch
+            {
+                MessageBox.Show("Communication timed out.", "Communication Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                stop.Set();
+                CloseCOM();
+                return;
+            }
+            // signal to Main thread that we finished the current processing
             stop.Set();
-           
+
         }
 
-        private void DisplayCOM(string tilt)
+        private void DisplayCOM(string tilt, string limit)
         {
             if (InvokeRequired)
             {
-                Invoke(DisplayCOM, new object[] { tilt });
+                Invoke(DisplayCOM, new object[] { tilt, limit });
             }
             else if (!IsDisposed)
             {
-                tbReceived.Text += "Tilt is:       " + tilt + " °" + Environment.NewLine;
+                tbDegree.Text += "Tilt is:       " + tilt + " °" + Environment.NewLine;
+                if(Int16.Parse(tilt) >= 0)
+                {
+                    tb7seg.Text = $"  {tilt}";
+                }
+                else
+                {
+                    tb7seg.Text = tilt;
+                }
+                tbMaxDegree.Text = limit + " °";  
             }
 
         }
@@ -67,7 +87,12 @@ namespace Tilt_detector
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
-            serialport.Close();
+            if (serialport.IsOpen)
+            {
+                stop.Set();
+                CloseCOM();
+            }
+            
         }
 
         private void bOpenCOM_Click(object sender, EventArgs e)
@@ -77,7 +102,7 @@ namespace Tilt_detector
             {
                 try
                 {
-
+                    serialport.ReadTimeout = 3000;
                     serialport.PortName = cBoxPorts.Text;
                     serialport.BaudRate = Convert.ToInt32(cBoxBaudRate.Text);
                     serialport.DataBits = Convert.ToInt32(cBoxBits.Text);
@@ -106,16 +131,18 @@ namespace Tilt_detector
                             serialport.StopBits = System.IO.Ports.StopBits.One;
                             break;
                     }
-              
+
                     serialport.Open();
+
+                    // Prepare the event, flag and thread for the communication
+                    stop.Reset();
+                    communicate = true;
+                    ThreadPool.QueueUserWorkItem(ProccesData);
                 }
                 catch
                 {
                     MessageBox.Show("Didn't find a COM port with matching parameters.", "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-
-                communicate = true;
-                ThreadPool.QueueUserWorkItem(ProccesData);
             }
 
         }
@@ -124,12 +151,16 @@ namespace Tilt_detector
         {
             if (communicate)
             {
-                communicate = false;
-                stop.WaitOne();
-                serialport.Close();
-                stop.Reset();
+                CloseCOM();
             }
 
+        }
+
+        private void CloseCOM()
+        {
+            communicate = false;
+            stop.WaitOne();
+            serialport.Close();
         }
 
     }
