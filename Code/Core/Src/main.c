@@ -53,10 +53,12 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 volatile uint8_t measure = 0;
-volatile uint16_t limit = 90;
+// tilt will be displayed from 0˙ to 90˙
+volatile int16_t limit = 90;
 int16_t degree;
 int16_t current_limit = 90;
 int16_t previous_limit = 90;
+Orientation facing;
 
 /* USER CODE END PV */
 
@@ -88,11 +90,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	if (GPIO_Pin == button_up_Pin) {
-		limit++;
+		if(limit < 90){
+			limit++;
+		}
 	}
 
 	if (GPIO_Pin == button_down_Pin) {
-		limit--;
+		if(0 < limit){
+			limit--;
+		}
 	}
 
 }
@@ -138,7 +144,8 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+
+	HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -173,10 +180,17 @@ int main(void)
 		if (measure) {
 			measure = 0;
 
-			current_limit = limit;
-			degree = Measure_degree();
+			current_limit = limit;     // Sampling the data
+			degree = Measure_tilt();
+			if(degree < 0){
+				facing = DOWN;
+			}
+			else{
+				facing = UP;
+			}
+			degree = abs(degree);
 
-			if(abs(degree) > current_limit){
+			if(degree > current_limit){
 				Start_buzzer();
 			}
 			else{
@@ -186,11 +200,11 @@ int main(void)
 			printf("%d\r\n", degree);        // Send data to the PC
 			printf("%d\r\n", current_limit);
 
-			if(previous_limit != current_limit){
-				Display_limit(current_limit);
+			if(previous_limit != current_limit){         // When the limit changes display the new value,
+				Display_limit(current_limit, facing);    // otherwise display the current tilt on the 7seg
 			}
 			else{
-				Display_degree(degree);
+				Display_tilt(degree, facing);
 			}
 
 			previous_limit = current_limit;

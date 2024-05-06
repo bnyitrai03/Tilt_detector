@@ -68,7 +68,6 @@ static void MEMS_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	//HAL_GPIO_TogglePin(GPIOA, LED_Pin);
 
 	if (htim->Instance == TIM4){
 		read = 1;
@@ -92,25 +91,27 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 }
 
 void EnableDisplay() {
-	HAL_GPIO_WritePin(GPIOB, OE_7seg_Pin, GPIO_PIN_RESET); // 7seg display active
+	HAL_GPIO_WritePin(GPIOA, _OE7seg_Pin, GPIO_PIN_RESET); // 7seg display active
 }
 
 void DisableDisplay() {
-	HAL_GPIO_WritePin(GPIOB, OE_7seg_Pin, GPIO_PIN_SET); // deactivate 7seg display
+	HAL_GPIO_WritePin(GPIOA, _OE7seg_Pin, GPIO_PIN_SET); // deactivate 7seg display
 }
 
 void LatchEnable() {
-	HAL_GPIO_WritePin(GPIOC, SS_7seg_Pin, GPIO_PIN_RESET);
-	HAL_Delay(1);  // Short delay to ensure the latch pulse is detected
 	HAL_GPIO_WritePin(GPIOC, SS_7seg_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOC, SS_7seg_Pin, GPIO_PIN_RESET);
+
 }
 
 
 void Send7seg() {
-	uint8_t display_8 = 0xFF;
+	uint8_t display_8 = 0xAA;
 
-	HAL_SPI_Transmit(&hspi3, &display_8, 1, 1000);  // Send 1 byte per driver
+	HAL_SPI_Transmit(&hspi3, &display_8, 1, 1000);
 	LatchEnable();  // Latch data once all have been transmitted
+	EnableDisplay();
+	DisableDisplay();
 }
 
 /* USER CODE END 4 */
@@ -152,14 +153,15 @@ int main(void)
   MX_TIM10_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  BSP_SPI2_Init();
-  //MEMS_Init();
+  if (BSP_SPI2_Init()!= BSP_ERROR_NONE){
+	  return;
+  }
+  MEMS_Init();
 
-  //HAL_TIM_Base_Start_IT(&htim4); // measure accelometer
-  //EnableDisplay(); // Show it on display
+  HAL_TIM_Base_Start_IT(&htim4); // measure accelometer
+  DisableDisplay(); // Show it on display
 
   uint8_t buf[] = {"Hello World!\n\r"};
-  uint8_t num = {0, 5, 10};
   uint8_t i = 0;
   /* USER CODE END 2 */
 
@@ -168,20 +170,17 @@ int main(void)
   while (1)
   {
 	 if(read){
-		 read = 0;
+		read = 0;
 		LSM6DSL_ACC_GetAxes(&Accelometer, &acc_axes); // test read the accelometer
-		 read = 0;
+		printf("x: %5d y: %5d z: %5d \r\n", (int)acc_axes.x, (int)acc_axes.y, (int)acc_axes.z);
 		 //Send7seg(); // test the 7seg
 	 }
 	 if(i == 0){
 		 HAL_UART_Transmit(&huart2, buf, sizeof(buf), HAL_MAX_DELAY);
 		 HAL_Delay(1000);
+		 i++;
 	 }
-	 else{
-		 printf("%d %d %d\r\n", i, i+3, i+5);
-		 HAL_Delay(1000);
-	 }
-	 i += 5;
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -201,7 +200,7 @@ void SystemClock_Config(void)
   /** Configure the main internal regulator output voltage
   */
   __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
@@ -211,11 +210,18 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 72;
+  RCC_OscInitStruct.PLL.PLLN = 180;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 3;
   RCC_OscInitStruct.PLL.PLLR = 2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Activate the Over-Drive mode
+  */
+  if (HAL_PWREx_EnableOverDrive() != HAL_OK)
   {
     Error_Handler();
   }
@@ -226,10 +232,10 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
     Error_Handler();
   }
@@ -258,7 +264,7 @@ static void MX_SPI3_Init(void)
   hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi3.Init.NSS = SPI_NSS_SOFT;
-  hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+  hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
   hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi3.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -404,10 +410,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, buzzer_Pin|SS_7seg_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LED_Pin|_OE7seg_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, SS_accel_Pin|OE_7seg_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(SS_accel_GPIO_Port, SS_accel_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : buzzer_Pin SS_7seg_Pin */
   GPIO_InitStruct.Pin = buzzer_Pin|SS_7seg_Pin;
@@ -416,19 +422,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LED_Pin */
-  GPIO_InitStruct.Pin = LED_Pin;
+  /*Configure GPIO pins : LED_Pin _OE7seg_Pin */
+  GPIO_InitStruct.Pin = LED_Pin|_OE7seg_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SS_accel_Pin OE_7seg_Pin */
-  GPIO_InitStruct.Pin = SS_accel_Pin|OE_7seg_Pin;
+  /*Configure GPIO pin : SS_accel_Pin */
+  GPIO_InitStruct.Pin = SS_accel_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(SS_accel_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : button1_Pin */
   GPIO_InitStruct.Pin = button1_Pin;
@@ -457,15 +463,19 @@ static void MX_GPIO_Init(void)
 int32_t wrap_platform_read(uint8_t Address, uint8_t Reg, uint8_t *Bufp, uint16_t len){
   uint32_t ret;
   Reg |= 0x80;
+  HAL_GPIO_WritePin(GPIOB, SS_accel_Pin, GPIO_PIN_RESET);
   ret = BSP_SPI2_Send(&Reg, 1);
   ret = BSP_SPI2_Recv(Bufp, len);
+  HAL_GPIO_WritePin(GPIOB, SS_accel_Pin, GPIO_PIN_SET);
   return ret;
 }
 
 int32_t wrap_platform_write(uint8_t Address, uint8_t Reg, uint8_t *Bufp, uint16_t len){
   uint32_t ret;
+  HAL_GPIO_WritePin(GPIOB, SS_accel_Pin, GPIO_PIN_RESET);
   ret = BSP_SPI2_Send(&Reg, 1);
   ret = BSP_SPI2_Send(Bufp, len);
+  HAL_GPIO_WritePin(GPIOB, SS_accel_Pin, GPIO_PIN_SET);
   return ret;
 }
 
@@ -473,7 +483,7 @@ static void MEMS_Init(void)
 {
   LSM6DSL_IO_t io_ctx;
   uint8_t id;
-  LSM6DSL_AxesRaw_t axes;
+  //LSM6DSL_AxesRaw_t axes;
 
   /* Link SPI functions to the LSM6DSL driver */
   io_ctx.BusType   = LSM6DSL_SPI_4WIRES_BUS;
@@ -487,7 +497,7 @@ static void MEMS_Init(void)
 
   /* Read the LSM6DSL WHO_AM_I register */
   uint8_t ret = LSM6DSL_ReadID(&Accelometer, &id);
-  if (id != LSM6DSL_ID) {
+   if (id != LSM6DSL_ID) {
     Error_Handler();
   }
 
@@ -498,7 +508,7 @@ static void MEMS_Init(void)
   LSM6DSL_ACC_SetOutputDataRate(&Accelometer, 26.0f); /* 26 Hz */
   LSM6DSL_ACC_SetFullScale(&Accelometer, 4);          /* [-4000mg; +4000mg] */
   //LSM6DSL_ACC_Set_INT1_DRDY(&Accelometer, ENABLE);    /* Enable DRDY */
-  LSM6DSL_ACC_GetAxesRaw(&Accelometer, &axes);        /* Clear DRDY */
+  //LSM6DSL_ACC_GetAxesRaw(&Accelometer, &axes);        /* Clear DRDY */
 
   /* Start the LSM6DSL accelerometer */
   LSM6DSL_ACC_Enable(&Accelometer);
@@ -522,6 +532,8 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+	  HAL_GPIO_TogglePin(GPIOA, LED_Pin);
+	  HAL_Delay(2000);
   }
   /* USER CODE END Error_Handler_Debug */
 }

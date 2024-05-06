@@ -11,8 +11,8 @@
 void MEMS_Init();
 int32_t wrap_platform_read(uint8_t Address, uint8_t Reg, uint8_t *Bufp, uint16_t len);
 int32_t wrap_platform_write(uint8_t Address, uint8_t Reg, uint8_t *Bufp, uint16_t len);
-int Measure_degree();
-static int Calculate_degree();
+int Measure_tilt();
+static int Calculate_tilt();
 
 LSM6DSL_Object_t Accelometer;
 LSM6DSL_Axes_t acc_axes;
@@ -68,7 +68,7 @@ void MEMS_Init()
   LSM6DSL_ACC_Enable(&Accelometer);
 }
 
-int Measure_degree(){
+int Measure_tilt(){
 	if(i == 90){
 		i = -91;
 	}
