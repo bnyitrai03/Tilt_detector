@@ -1,4 +1,4 @@
-../Core/Src/accelerometer.c:23:9:wrap_platform_read	1
-../Core/Src/accelerometer.c:33:9:wrap_platform_write	1
-../Core/Src/accelerometer.c:42:6:MEMS_Init	2
-../Core/Src/accelerometer.c:77:9:Measure_tilt	1
+../Core/Src/accelerometer.c:25:9:wrap_platform_read	1
+../Core/Src/accelerometer.c:35:9:wrap_platform_write	1
+../Core/Src/accelerometer.c:44:6:MEMS_Init	2
+../Core/Src/accelerometer.c:79:9:Measure_tilt	3

@@ -5,14 +5,24 @@
  *      Author: Bence
  */
 #include "UI.h"
+#include <stdio.h>
 
 extern TIM_HandleTypeDef htim10; // timer responsible for generating the buzzer signal
+extern UART_HandleTypeDef huart2;
 
+int _write(int fd, char * ptr, int len);
 void Start_buzzer();
 void Stop_buzzer();
 int32_t Calculate_bitmask(uint8_t value, Orientation display);
 static int32_t Convert_digit_UPSIDE(uint8_t digit);
 static int32_t Convert_digit_DOWNSIDE(uint8_t digit);
+
+// Redirect the printf to COM port
+int _write(int fd, char * ptr, int len)
+{
+  HAL_UART_Transmit(&huart2, (uint8_t *) ptr, len, HAL_MAX_DELAY);
+  return len;
+}
 
 void Start_buzzer(){
 	HAL_TIM_Base_Start_IT(&htim10);

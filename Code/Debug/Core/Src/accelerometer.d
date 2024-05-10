@@ -31,7 +31,7 @@ Core/Src/accelerometer.o: ../Core/Src/accelerometer.c ../Core/Inc/main.h \
  ../Drivers/BSP/Components/lsm6dsl/lsm6dsl.h \
  ../Drivers/BSP/Components/lsm6dsl/lsm6dsl_reg.h \
  ../Core/Inc/stm32f4xx_nucleo_bus.h ../Core/Inc/stm32f4xx_nucleo_conf.h \
- ../Core/Inc/stm32f4xx_nucleo_errno.h
+ ../Core/Inc/stm32f4xx_nucleo_errno.h ../Core/Inc/UI.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -67,3 +67,4 @@ Core/Src/accelerometer.o: ../Core/Src/accelerometer.c ../Core/Inc/main.h \
 ../Core/Inc/stm32f4xx_nucleo_bus.h:
 ../Core/Inc/stm32f4xx_nucleo_conf.h:
 ../Core/Inc/stm32f4xx_nucleo_errno.h:
+../Core/Inc/UI.h:

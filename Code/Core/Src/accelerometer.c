@@ -9,6 +9,8 @@
 #include "stm32f4xx_nucleo_bus.h"
 #include <stdlib.h>
 
+#include "UI.h"
+
 void MEMS_Init();
 int32_t wrap_platform_read(uint8_t Address, uint8_t Reg, uint8_t *Bufp, uint16_t len);
 int32_t wrap_platform_write(uint8_t Address, uint8_t Reg, uint8_t *Bufp, uint16_t len);
@@ -77,6 +79,19 @@ void MEMS_Init()
 int32_t Measure_tilt(){
 	double tilt;
 	LSM6DSL_ACC_GetAxes(&Accelerometer, &acc_axes); // read the accelerometer
-	tilt = atan( ((double)acc_axes.x)/ ((double)acc_axes.z) ) * (180/PI);
-	return (int32_t)tilt * (-1);
+
+	if(acc_axes.z < 0){ // we only measure angles from -90˙ ... +90˙
+
+		if(acc_axes.x < 0){
+			tilt = 90; // if the tilt is bigger than +90˙, we display the max value
+		}
+		else{
+			tilt = -90; // if we are under -90˙, we display the smallest value
+		}
+
+	}else{
+		tilt = atan( ((double)acc_axes.x)/ ((double)acc_axes.z) ) * (180/PI) * (-1); // -1 is to change the orientation
+	}
+
+	return (int32_t)tilt;
 }

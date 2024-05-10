@@ -21,8 +21,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-
 #include "accelerometer.h"
 #include "UI.h"
 /* USER CODE END Includes */
@@ -52,9 +50,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 volatile uint8_t measure = 0;
-// tilt will be displayed from 0˙ to 90˙
 volatile int32_t limit = 90;
-int32_t degree;
+int32_t degree;              // tilt will be displayed on the emulated 7seg from 0˙ to 90˙
 int32_t current_limit = 90;
 int32_t previous_limit = 90;
 
@@ -189,10 +186,10 @@ int main(void)
 			}
 
 			// Send data to the PC
-			printf("%d\r\n", degree);
-			printf("%d\r\n", current_limit);
-			printf("%d\r\n", bitmask_lower);
-			printf("%d\r\n", bitmask_higher);
+			printf("%d\r\n", (int)degree);
+			printf("%d\r\n", (int)current_limit);
+			printf("%d\r\n", (int)bitmask_lower);
+			printf("%d\r\n", (int)bitmask_higher);
 
 			previous_limit = current_limit;
 		}
@@ -470,12 +467,6 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-// Redirect the printf to COM port
-int _write(int fd, char * ptr, int len)
-{
-  HAL_UART_Transmit(&huart2, (uint8_t *) ptr, len, HAL_MAX_DELAY);
-  return len;
-}
 /* USER CODE END 4 */
 
 /**
