@@ -22,7 +22,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "accelerometer.h"
 #include "UI.h"
@@ -54,12 +53,14 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 volatile uint8_t measure = 0;
 // tilt will be displayed from 0˙ to 90˙
-volatile int16_t limit = 90;
-int16_t degree;
-int16_t current_limit = 90;
-int16_t previous_limit = 90;
-Orientation facing;
+volatile int32_t limit = 90;
+int32_t degree;
+int32_t current_limit = 90;
+int32_t previous_limit = 90;
 
+int32_t bitmask_lower;
+int32_t bitmask_higher;
+Orientation display;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -76,7 +77,6 @@ static void MX_USART2_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	//HAL_GPIO_TogglePin(GPIOA, LED_Pin);
 
 	if (htim->Instance == TIM4){ // measuring the accelerometer
 		measure = 1;
@@ -101,28 +101,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		}
 	}
 
-}
-
-void EnableDisplay() {
-	HAL_GPIO_WritePin(GPIOB, OE_7seg_Pin, GPIO_PIN_RESET); // 7seg display active
-}
-
-void DisableDisplay() {
-	HAL_GPIO_WritePin(GPIOB, OE_7seg_Pin, GPIO_PIN_SET); // deactivate 7seg display
-}
-
-void LatchEnable() {
-	HAL_GPIO_WritePin(GPIOC, SS_7seg_Pin, GPIO_PIN_RESET);
-	HAL_Delay(1);  // Short delay to ensure the latch pulse is detected
-	HAL_GPIO_WritePin(GPIOC, SS_7seg_Pin, GPIO_PIN_SET);
-}
-
-
-void Send7seg() {
-	uint8_t display_8 = 0xFF;
-
-	HAL_SPI_Transmit(&hspi3, &display_8, 1, 1000);  // Send 1 byte per driver
-	LatchEnable();  // Latch data once all have been transmitted
 }
 
 /* USER CODE END 4 */
@@ -166,10 +144,10 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   BSP_SPI2_Init();
-  //MEMS_Init();
+  MEMS_Init();
 
   HAL_TIM_Base_Start_IT(&htim4); // measure accelerometer every 100 ms
-  //EnableDisplay(); // Show it on display
+
 
   /* USER CODE END 2 */
 
@@ -182,30 +160,39 @@ int main(void)
 
 			current_limit = limit;     // Sampling the data
 			degree = Measure_tilt();
+
 			if(degree < 0){
-				facing = DOWN;
+				display = DOWN;
 			}
 			else{
-				facing = UP;
+				display = UP;
 			}
-			degree = abs(degree);
 
-			if(degree > current_limit){
+			if(abs(degree) > current_limit){
 				Start_buzzer();
 			}
 			else{
 				Stop_buzzer();
 			}
 
-			printf("%d\r\n", degree);        // Send data to the PC
-			printf("%d\r\n", current_limit);
 
-			if(previous_limit != current_limit){         // When the limit changes display the new value,
-				Display_limit(current_limit, facing);    // otherwise display the current tilt on the 7seg
+			if (previous_limit != current_limit) { // When the limit changes display the new value,
+				                                  // otherwise display the current tilt on the emulated 7seg display
+				bitmask_lower = Calculate_bitmask((uint8_t)(current_limit % 10), display);
+				bitmask_higher = Calculate_bitmask((uint8_t)(current_limit / 10), display);
+			} else {
+				bitmask_lower = Calculate_bitmask((uint8_t)(abs(degree) % 10), display);
+				bitmask_higher = Calculate_bitmask((uint8_t)(abs(degree) / 10), display);
 			}
-			else{
-				Display_tilt(degree, facing);
+			if(bitmask_higher == 0x3F){ // if the number is single digit
+				bitmask_higher = 0;     // don't display a 0 unnecessarily
 			}
+
+			// Send data to the PC
+			printf("%d\r\n", degree);
+			printf("%d\r\n", current_limit);
+			printf("%d\r\n", bitmask_lower);
+			printf("%d\r\n", bitmask_higher);
 
 			previous_limit = current_limit;
 		}
@@ -502,6 +489,8 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+	  HAL_GPIO_TogglePin(GPIOA, LED_Pin);
+	  HAL_Delay(5000);
   }
   /* USER CODE END Error_Handler_Debug */
 }

@@ -159,7 +159,7 @@ int main(void)
   MEMS_Init();
 
   HAL_TIM_Base_Start_IT(&htim4); // measure accelometer
-  DisableDisplay(); // Show it on display
+  //DisableDisplay(); // Show it on display
 
   uint8_t buf[] = {"Hello World!\n\r"};
   uint8_t i = 0;
@@ -483,7 +483,7 @@ static void MEMS_Init(void)
 {
   LSM6DSL_IO_t io_ctx;
   uint8_t id;
-  //LSM6DSL_AxesRaw_t axes;
+  LSM6DSL_AxesRaw_t axes;
 
   /* Link SPI functions to the LSM6DSL driver */
   io_ctx.BusType   = LSM6DSL_SPI_4WIRES_BUS;
@@ -494,6 +494,9 @@ static void MEMS_Init(void)
   io_ctx.WriteReg  = wrap_platform_write;
   io_ctx.GetTick   = BSP_GetTick;
   LSM6DSL_RegisterBusIO(&Accelometer, &io_ctx);
+
+  // Pull the SS high before starting communication
+  HAL_GPIO_WritePin(GPIOB, SS_accel_Pin, GPIO_PIN_SET);
 
   /* Read the LSM6DSL WHO_AM_I register */
   uint8_t ret = LSM6DSL_ReadID(&Accelometer, &id);
@@ -507,8 +510,8 @@ static void MEMS_Init(void)
   /* Configure the LSM6DSL accelerometer (ODR, scale and interrupt) */
   LSM6DSL_ACC_SetOutputDataRate(&Accelometer, 26.0f); /* 26 Hz */
   LSM6DSL_ACC_SetFullScale(&Accelometer, 4);          /* [-4000mg; +4000mg] */
-  //LSM6DSL_ACC_Set_INT1_DRDY(&Accelometer, ENABLE);    /* Enable DRDY */
-  //LSM6DSL_ACC_GetAxesRaw(&Accelometer, &axes);        /* Clear DRDY */
+  LSM6DSL_ACC_Set_INT1_DRDY(&Accelometer, ENABLE);    /* Enable DRDY */
+  LSM6DSL_ACC_GetAxesRaw(&Accelometer, &axes);        /* Clear DRDY */
 
   /* Start the LSM6DSL accelerometer */
   LSM6DSL_ACC_Enable(&Accelometer);

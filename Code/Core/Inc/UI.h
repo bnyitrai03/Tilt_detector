@@ -15,7 +15,5 @@ typedef enum{
 
 void Start_buzzer();
 void Stop_buzzer();
-void Display_tilt(int16_t tilt, Orientation facing);
-void Display_limit(int16_t limit, Orientation facing);
 
 #endif /* INC_UI_H_ */

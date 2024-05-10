@@ -1,0 +1,5 @@
+../Core/Src/UI.c:17:6:Start_buzzer	8	static
+../Core/Src/UI.c:21:6:Stop_buzzer	8	static
+../Core/Src/UI.c:25:9:Calculate_bitmask	24	static
+../Core/Src/UI.c:67:16:Convert_digit_UPSIDE	24	static
+../Core/Src/UI.c:134:16:Convert_digit_DOWNSIDE	24	static
