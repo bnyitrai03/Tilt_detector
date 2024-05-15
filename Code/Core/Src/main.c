@@ -32,7 +32,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define  ARM_CM_DEMCR      (*(uint32_t *)0xE000EDFC)
+#define  ARM_CM_DWT_CTRL   (*(uint32_t *)0xE0001000)
+#define  ARM_CM_DWT_CYCCNT (*(uint32_t *)0xE0001004)
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -41,8 +43,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-SPI_HandleTypeDef hspi3;
-
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim10;
 
@@ -58,12 +58,15 @@ int32_t previous_limit = 90;
 int32_t bitmask_lower;
 int32_t bitmask_higher;
 Orientation display;
+
+uint32_t start;
+uint32_t stop;
+uint32_t delta;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_SPI3_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM10_Init(void);
 static void MX_USART2_UART_Init(void);
@@ -113,14 +116,17 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	if (ARM_CM_DWT_CTRL != 0) {        // See if DWT is available
+	    ARM_CM_DEMCR      |= 1 << 24;  // Set bit 24
+	    ARM_CM_DWT_CYCCNT  = 0;
+	    ARM_CM_DWT_CTRL   |= 1 << 0;   // Set bit 0
+	}
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-
-	HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -135,7 +141,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_SPI3_Init();
   MX_TIM4_Init();
   MX_TIM10_Init();
   MX_USART2_UART_Init();
@@ -153,9 +158,11 @@ int main(void)
   while (1)
   {
 		if (measure) {
+			start = ARM_CM_DWT_CYCCNT;
 			measure = 0;
 
-			current_limit = limit;     // Sampling the data
+			// Sampling the data
+			current_limit = limit;
 			degree = Measure_tilt();
 
 			if(degree < 0){
@@ -173,7 +180,7 @@ int main(void)
 			}
 
 
-			if (previous_limit != current_limit) { // When the limit changes display the new value,
+			if (previous_limit != current_limit) { // When the limit changes, display the new value,
 				                                  // otherwise display the current tilt on the emulated 7seg display
 				bitmask_lower = Calculate_bitmask((uint8_t)(current_limit % 10), display);
 				bitmask_higher = Calculate_bitmask((uint8_t)(current_limit / 10), display);
@@ -186,10 +193,15 @@ int main(void)
 			}
 
 			// Send data to the PC
-			printf("%d\r\n", (int)degree);
-			printf("%d\r\n", (int)current_limit);
-			printf("%d\r\n", (int)bitmask_lower);
-			printf("%d\r\n", (int)bitmask_higher);
+			printf("Start of Frame\n");
+			printf("%d\n", (int)degree);
+			printf("%d\n", (int)current_limit);
+
+			stop  = ARM_CM_DWT_CYCCNT;
+			delta = stop - start;
+
+			/*printf("%d \r\n", bitmask_lower);
+			printf("%d \r\n", bitmask_higher);*/
 
 			previous_limit = current_limit;
 		}
@@ -213,7 +225,7 @@ void SystemClock_Config(void)
   /** Configure the main internal regulator output voltage
   */
   __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
@@ -223,11 +235,18 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 72;
+  RCC_OscInitStruct.PLL.PLLN = 180;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 3;
   RCC_OscInitStruct.PLL.PLLR = 2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Activate the Over-Drive mode
+  */
+  if (HAL_PWREx_EnableOverDrive() != HAL_OK)
   {
     Error_Handler();
   }
@@ -238,51 +257,13 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief SPI3 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SPI3_Init(void)
-{
-
-  /* USER CODE BEGIN SPI3_Init 0 */
-
-  /* USER CODE END SPI3_Init 0 */
-
-  /* USER CODE BEGIN SPI3_Init 1 */
-
-  /* USER CODE END SPI3_Init 1 */
-  /* SPI3 parameter configuration*/
-  hspi3.Instance = SPI3;
-  hspi3.Init.Mode = SPI_MODE_MASTER;
-  hspi3.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi3.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi3.Init.NSS = SPI_NSS_SOFT;
-  hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
-  hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi3.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi3.Init.CRCPolynomial = 10;
-  if (HAL_SPI_Init(&hspi3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN SPI3_Init 2 */
-
-  /* USER CODE END SPI3_Init 2 */
-
 }
 
 /**
@@ -304,7 +285,7 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 69;
+  htim4.Init.Prescaler = 137;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 65535;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -413,20 +394,20 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, buzzer_Pin|SS_7seg_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(buzzer_GPIO_Port, buzzer_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, SS_accel_Pin|OE_7seg_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(SS_accel_GPIO_Port, SS_accel_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : buzzer_Pin SS_7seg_Pin */
-  GPIO_InitStruct.Pin = buzzer_Pin|SS_7seg_Pin;
+  /*Configure GPIO pin : buzzer_Pin */
+  GPIO_InitStruct.Pin = buzzer_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(buzzer_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
@@ -435,12 +416,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SS_accel_Pin OE_7seg_Pin */
-  GPIO_InitStruct.Pin = SS_accel_Pin|OE_7seg_Pin;
+  /*Configure GPIO pin : SS_accel_Pin */
+  GPIO_InitStruct.Pin = SS_accel_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(SS_accel_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : button_up_Pin */
   GPIO_InitStruct.Pin = button_up_Pin;

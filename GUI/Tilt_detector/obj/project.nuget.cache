@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "L2c/RtGuCSlfsDg7WAung72XANGLikj2kJ4A9dSL5msMtZ7UjS0g5ncs6DunF6v55aPsv+GCVbSRB5VhovyExQ==",
+  "dgSpecHash": "Rwp0ciyxXH5OB8DF6/NfnmVg17d7yXKbkTuIE9moVziZ3mAOHofEsiO9aL3jhc8uGPhT0nuLSGJHEJTDFU5GkQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\Tilt_detector.csproj",
+  "projectFilePath": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\Tilt_detector.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Bence\\.nuget\\packages\\runtime.linux-arm.runtime.native.system.io.ports\\8.0.0\\runtime.linux-arm.runtime.native.system.io.ports.8.0.0.nupkg.sha512",
     "C:\\Users\\Bence\\.nuget\\packages\\runtime.linux-arm64.runtime.native.system.io.ports\\8.0.0\\runtime.linux-arm64.runtime.native.system.io.ports.8.0.0.nupkg.sha512",

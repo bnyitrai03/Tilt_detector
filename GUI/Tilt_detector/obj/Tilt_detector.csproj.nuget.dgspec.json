@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\Tilt_detector.csproj": {}
+    "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\Tilt_detector.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\Tilt_detector.csproj": {
+    "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\Tilt_detector.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\Tilt_detector.csproj",
+        "projectUniqueName": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\Tilt_detector.csproj",
         "projectName": "Tilt_detector",
-        "projectPath": "C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\Tilt_detector.csproj",
+        "projectPath": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\Tilt_detector.csproj",
         "packagesPath": "C:\\Users\\Bence\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Bence\\Desktop\\EGYETEM\\Mikrokontroller_lab_software\\GUI\\Tilt_detector\\obj\\",
+        "outputPath": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
           "C:\\Users\\Bence\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [

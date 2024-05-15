@@ -5,17 +5,17 @@ namespace Tilt_detector
 {
     public partial class Mainform : Form
     {
-        SerialPort serialport = new SerialPort();
-        ManualResetEvent stop = new ManualResetEvent(false);
-        bool communicate;
+        private SerialCommunication serialCom = new SerialCommunication();
+        private Data data = new Data();
 
         public Mainform()
         {
             InitializeComponent();
             ListPorts();
+            serialCom.OnDataReceived += DisplayComm;
         }
 
-        public void ListPorts()
+        private void ListPorts()
         {
             string[] ports = SerialPort.GetPortNames();
             foreach (string port in ports)
@@ -24,54 +24,16 @@ namespace Tilt_detector
             }
         }
 
-        private void ProccesData(object arg)
-        {
-            try
-            {
-                while (communicate)
-                {
-                    bool newdata = false;
-                    string tilt = string.Empty;
-                    string limit = string.Empty;
-
-                    while (!newdata)
-                    {
-                        tilt = serialport.ReadLine();
-                        limit = serialport.ReadLine();
-                        if (!string.IsNullOrEmpty(tilt) && !string.IsNullOrEmpty(limit))
-                        {
-                            newdata = true;
-                        }
-                    }
-
-                    // Update the UI from the main thread
-                    DisplayCOM(tilt, limit);
-
-                    Thread.Sleep(400);
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Communication timed out.", "Communication Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                stop.Set();
-                CloseCOM();
-                return;
-            }
-            // signal to Main thread that we finished the current processing
-            stop.Set();
-
-        }
-
-        private void DisplayCOM(string tilt, string limit)
+        public void DisplayComm(string tilt, string limit)
         {
             if (InvokeRequired)
             {
-                Invoke(DisplayCOM, new object[] { tilt, limit });
+                Invoke(new Action(() => DisplayComm(tilt, limit)));               
             }
-            else if (!IsDisposed)
+            else
             {
                 tbDegree.Text += "Tilt is:       " + tilt + " °" + Environment.NewLine;
-                if(Int16.Parse(tilt) >= 0)
+                if (Int16.Parse(tilt) >= 0)
                 {
                     tb7seg.Text = $"  {tilt}";
                 }
@@ -79,7 +41,7 @@ namespace Tilt_detector
                 {
                     tb7seg.Text = tilt;
                 }
-                tbMaxDegree.Text = limit + " °";  
+                tbMaxDegree.Text = limit + " °";
             }
 
         }
@@ -87,81 +49,58 @@ namespace Tilt_detector
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
-            if (serialport.IsOpen)
-            {
-                stop.Set();
-                CloseCOM();
-            }
-            
+            serialCom.ClosePort();
         }
 
         private void bOpenCOM_Click(object sender, EventArgs e)
         {
-            // Open a COM port if there isn't already one
-            if (!communicate)
+            if (!serialCom.Communicate)
             {
-                try
+                Parity parity;
+                StopBits stopbits;
+
+                switch (cBoxParity.Text)
                 {
-                    serialport.ReadTimeout = 3000;
-                    serialport.PortName = cBoxPorts.Text;
-                    serialport.BaudRate = Convert.ToInt32(cBoxBaudRate.Text);
-                    serialport.DataBits = Convert.ToInt32(cBoxBits.Text);
+                    case "odd":
+                        parity = Parity.Odd;
+                        break;
 
-                    switch (cBoxParity.Text)
-                    {
-                        case "odd":
-                            serialport.Parity = Parity.Odd;
-                            break;
+                    case "even":
+                        parity = Parity.Even;
+                        break;
 
-                        case "even":
-                            serialport.Parity = Parity.Even;
-                            break;
-
-                        default:
-                            serialport.Parity = Parity.None;
-                            break;
-                    }
-
-                    switch (cBoxStop.Text)
-                    {
-                        case "2":
-                            serialport.StopBits = System.IO.Ports.StopBits.Two;
-                            break;
-                        default:
-                            serialport.StopBits = System.IO.Ports.StopBits.One;
-                            break;
-                    }
-
-                    serialport.Open();
-
-                    // Prepare the event, flag and thread for the communication
-                    stop.Reset();
-                    communicate = true;
-                    ThreadPool.QueueUserWorkItem(ProccesData);
+                    default:
+                        parity = Parity.None;
+                        break;
                 }
-                catch
+
+                switch (cBoxStop.Text)
                 {
-                    MessageBox.Show("Didn't find a COM port with matching parameters.", "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    case "2":
+                        stopbits = System.IO.Ports.StopBits.Two;
+                        break;
+                    default:
+                        stopbits = System.IO.Ports.StopBits.One;
+                        break;
                 }
+
+                serialCom.OpenPort(cBoxPorts.Text, Convert.ToInt32(cBoxBaudRate.Text), Convert.ToInt32(cBoxBits.Text), parity, stopbits);
             }
-
+        
         }
 
         private void bStopCOM_Click(object sender, EventArgs e)
         {
-            if (communicate)
+            if (serialCom.Communicate)
             {
-                CloseCOM();
+                //serialCom.ClosePort();
+                NonBlockingClose();
             }
-
         }
 
-        private void CloseCOM()
+        private async void NonBlockingClose()
         {
-            communicate = false;
-            stop.WaitOne();
-            serialport.Close();
+            await Task.Run(() => serialCom.ClosePort());
         }
-
     }
 }

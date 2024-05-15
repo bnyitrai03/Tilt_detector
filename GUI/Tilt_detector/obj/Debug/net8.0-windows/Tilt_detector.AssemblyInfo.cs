@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Tilt_detector")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+29ed263c59d4a5d3002f17374800c57dc5b6a7a6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+18d446b16039dda79faebc79068ef83c6e404f44")]
 [assembly: System.Reflection.AssemblyProductAttribute("Tilt_detector")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Tilt_detector")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
