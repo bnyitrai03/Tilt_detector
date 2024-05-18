@@ -43,6 +43,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim10;
 
@@ -51,6 +52,8 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 volatile uint8_t measure = 0;
 volatile int32_t limit = 90;
+volatile uint8_t bounce = 0;
+
 int32_t degree;              // tilt will be displayed on the emulated 7seg from 0˙ to 90˙
 int32_t current_limit = 90;
 int32_t previous_limit = 90;
@@ -58,10 +61,6 @@ int32_t previous_limit = 90;
 int32_t bitmask_lower;
 int32_t bitmask_higher;
 Orientation display;
-
-uint32_t start;
-uint32_t stop;
-uint32_t delta;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,6 +69,7 @@ static void MX_GPIO_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM10_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -78,29 +78,45 @@ static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN 0 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
-	if (htim->Instance == TIM4){ // measuring the accelerometer
+	// Measuring the accelerometer
+	if (htim->Instance == TIM4){
 		measure = 1;
 	}
 
+	// Generate 4kHz square wave for the buzzer
 	if (htim->Instance == TIM10){
-		HAL_GPIO_TogglePin(GPIOC, buzzer_Pin); // generate 4kHz square wave for the buzzer
+		HAL_GPIO_TogglePin(GPIOC, buzzer_Pin);
+	}
+
+	// Debounce the buttons
+	if(htim->Instance == TIM1){
+		if(HAL_GPIO_ReadPin(button_up_GPIO_Port, button_up_Pin) == GPIO_PIN_SET
+		   && HAL_GPIO_ReadPin(button_down_GPIO_Port, button_down_Pin) == GPIO_PIN_SET){
+			bounce = 0;
+			HAL_TIM_Base_Stop_IT(&htim1);
+		}
 	}
 
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-	if (GPIO_Pin == button_up_Pin) {
-		if(limit < 90){
-			limit++;
-		}
-	}
+	if (bounce == 0) {
 
-	if (GPIO_Pin == button_down_Pin) {
-		if(0 < limit){
-			limit--;
+		if (GPIO_Pin == button_up_Pin) {
+			if (limit < 90) {
+				limit++;
+			}
 		}
-	}
 
+		if (GPIO_Pin == button_down_Pin) {
+			if (0 < limit) {
+				limit--;
+			}
+		}
+		// The button has started to bounce
+		HAL_TIM_Base_Start_IT(&htim1);
+		bounce = 1;
+	}
 }
 
 /* USER CODE END 4 */
@@ -116,11 +132,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	if (ARM_CM_DWT_CTRL != 0) {        // See if DWT is available
-	    ARM_CM_DEMCR      |= 1 << 24;  // Set bit 24
-	    ARM_CM_DWT_CYCCNT  = 0;
-	    ARM_CM_DWT_CTRL   |= 1 << 0;   // Set bit 0
-	}
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -144,6 +156,7 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM10_Init();
   MX_USART2_UART_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   BSP_SPI2_Init();
   MEMS_Init();
@@ -158,7 +171,6 @@ int main(void)
   while (1)
   {
 		if (measure) {
-			start = ARM_CM_DWT_CYCCNT;
 			measure = 0;
 
 			// Sampling the data
@@ -171,6 +183,7 @@ int main(void)
 			else{
 				display = UP;
 			}
+
 
 			if(abs(degree) > current_limit){
 				Start_buzzer();
@@ -185,23 +198,45 @@ int main(void)
 				bitmask_lower = Calculate_bitmask((uint8_t)(current_limit % 10), display);
 				bitmask_higher = Calculate_bitmask((uint8_t)(current_limit / 10), display);
 			} else {
-				bitmask_lower = Calculate_bitmask((uint8_t)(abs(degree) % 10), display);
-				bitmask_higher = Calculate_bitmask((uint8_t)(abs(degree) / 10), display);
-			}
-			if(bitmask_higher == 0x3F){ // if the number is single digit
-				bitmask_higher = 0;     // don't display a 0 unnecessarily
+				if(display == UP){
+					bitmask_lower = Calculate_bitmask((uint8_t)(abs(degree) % 10), display);
+					bitmask_higher = Calculate_bitmask((uint8_t)(abs(degree) / 10), display);
+
+					// Don't display single digit numbers on two digits
+					if (bitmask_higher == 0x3F) {
+						bitmask_higher = 0;
+					}
+				}
+				// When the display faces down the lower and higher digit switches
+				else{
+					bitmask_lower = Calculate_bitmask((uint8_t)(abs(degree) / 10), display);
+					bitmask_higher = Calculate_bitmask((uint8_t)(abs(degree) % 10), display);
+
+					// Don't display single digit numbers on two digits
+					if (bitmask_lower == 0x3F) {
+						bitmask_lower = 0;
+					}
+				}
 			}
 
 			// Send data to the PC
 			printf("Start of Frame\n");
 			printf("%d\n", (int)degree);
 			printf("%d\n", (int)current_limit);
+			printf("%d\n", (int)bitmask_lower);
+			printf("%d\n", (int)bitmask_higher);
 
-			stop  = ARM_CM_DWT_CYCCNT;
-			delta = stop - start;
+			// Display the limit change for 1 sec
+			if (previous_limit != current_limit) {
+				// Disable button interrupts while displaying new limit value
+				HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
-			/*printf("%d \r\n", bitmask_lower);
-			printf("%d \r\n", bitmask_higher);*/
+				HAL_Delay(500);
+				// Reenable limit changing
+				HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+			}
 
 			previous_limit = current_limit;
 		}
@@ -264,6 +299,52 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 69;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 65535;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
+
 }
 
 /**

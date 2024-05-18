@@ -72,6 +72,7 @@ E:\EGYETEM\MARlab_sw\GUI\Tilt_detector\bin\Debug\net8.0-windows\runtimes\unix\li
 E:\EGYETEM\MARlab_sw\GUI\Tilt_detector\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.IO.Ports.dll
 E:\EGYETEM\MARlab_sw\GUI\Tilt_detector\obj\Debug\net8.0-windows\Tilt_detector.csproj.AssemblyReference.cache
 E:\EGYETEM\MARlab_sw\GUI\Tilt_detector\obj\Debug\net8.0-windows\Tilt_detector.Mainform.resources
+E:\EGYETEM\MARlab_sw\GUI\Tilt_detector\obj\Debug\net8.0-windows\Tilt_detector.SevenSegmentDisplay.resources
 E:\EGYETEM\MARlab_sw\GUI\Tilt_detector\obj\Debug\net8.0-windows\Tilt_detector.csproj.GenerateResource.cache
 E:\EGYETEM\MARlab_sw\GUI\Tilt_detector\obj\Debug\net8.0-windows\Tilt_detector.GeneratedMSBuildEditorConfig.editorconfig
 E:\EGYETEM\MARlab_sw\GUI\Tilt_detector\obj\Debug\net8.0-windows\Tilt_detector.AssemblyInfoInputs.cache

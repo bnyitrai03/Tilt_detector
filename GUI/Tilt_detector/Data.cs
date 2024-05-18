@@ -8,11 +8,15 @@ namespace Tilt_detector
 {
     public class Data
     {
+        private int tilt;
+        private int limit;
+        private int lowdigit;
+        private int highdigit;
 
-        public string Tilt { get; private set; }
-        public string Limit { get; private set; }
-        public string LowDigit { get; private set; }
-        public string HighDigit { get; private set; }
+        public int Tilt {  get { return tilt; } set {  tilt = value; } }
+        public int Limit { get { return limit; } set { limit = value; } }
+        public int Lowdigit { get {  return lowdigit; } set {  lowdigit = value; } }
+        public int Highdigit { get { return highdigit; } set {  highdigit = value; } }
 
     }
 }

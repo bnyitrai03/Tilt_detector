@@ -6,13 +6,12 @@ namespace Tilt_detector
     public partial class Mainform : Form
     {
         private SerialCommunication serialCom = new SerialCommunication();
-        private Data data = new Data();
 
         public Mainform()
         {
             InitializeComponent();
             ListPorts();
-            serialCom.OnDataReceived += DisplayComm;
+            serialCom.OnDataReceived += DisplayComm;           
         }
 
         private void ListPorts()
@@ -24,32 +23,48 @@ namespace Tilt_detector
             }
         }
 
-        public void DisplayComm(string tilt, string limit)
+        public void DisplayComm(Data values)
         {
-            if (InvokeRequired)
+            try
             {
-                Invoke(new Action(() => DisplayComm(tilt, limit)));               
-            }
-            else
-            {
-                tbDegree.Text += "Tilt is:       " + tilt + " °" + Environment.NewLine;
-                if (Int16.Parse(tilt) >= 0)
+                if (InvokeRequired)
                 {
-                    tb7seg.Text = $"  {tilt}";
+                    Invoke(new Action(() => DisplayComm(values)));
                 }
                 else
                 {
-                    tb7seg.Text = tilt;
+                    tbTiltlog.Text = "Tilt is:       " + values.Tilt + " °          " + DateTime.Now.ToString() + Environment.NewLine + tbTiltlog.Text;
+
+                    if (values.Tilt >= 0)
+                    {
+                        tbTilt.Text = $"  {values.Tilt} °";
+                    }
+                    else
+                    {
+                        tbTilt.Text = values.Tilt + " °";
+                    }
+
+                    tbMaxDegree.Text = $" {values.Limit} °";
+
+                    DisplayHigh.Digit = values.Highdigit;
+                    tbHigh.Text = values.Highdigit.ToString("X");
+                    DisplayLow.Digit = values.Lowdigit;
+                    tbLow.Text = values.Lowdigit.ToString("X");
                 }
-                tbMaxDegree.Text = limit + " °";
+
+            }
+            catch (Exception e)
+            {
+                return;
             }
 
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            base.OnFormClosing(e);
+            serialCom.Stop.Set();
             serialCom.ClosePort();
+            base.OnFormClosing(e);
         }
 
         private void bOpenCOM_Click(object sender, EventArgs e)
@@ -86,19 +101,18 @@ namespace Tilt_detector
 
                 serialCom.OpenPort(cBoxPorts.Text, Convert.ToInt32(cBoxBaudRate.Text), Convert.ToInt32(cBoxBits.Text), parity, stopbits);
             }
-        
+
         }
 
         private void bStopCOM_Click(object sender, EventArgs e)
         {
             if (serialCom.Communicate)
             {
-                //serialCom.ClosePort();
-                NonBlockingClose();
+                NonBlockingCloseCom();
             }
         }
 
-        private async void NonBlockingClose()
+        private async void NonBlockingCloseCom()
         {
             await Task.Run(() => serialCom.ClosePort());
         }

@@ -5,16 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Ports;
 using System.Threading;
+using System.Linq.Expressions;
 
 namespace Tilt_detector
 {
-    public delegate void DataReceivedHandler(string tilt, string limit);
+    public delegate void DataReceivedHandler(Data values);
 
     public class SerialCommunication
     {
         private SerialPort serialPort;
         private bool communicate;
         private ManualResetEvent stop;
+
+        private Data values = new Data();
 
         public event DataReceivedHandler OnDataReceived;
 
@@ -67,7 +70,7 @@ namespace Tilt_detector
             communicate = false;
             if (!stop.WaitOne(500))
             {
-                MessageBox.Show("Couldn't close the serial port.", " Communication Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("There was an error while closing the serial port.", " Communication Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             if (serialPort.IsOpen)
             {
@@ -81,19 +84,32 @@ namespace Tilt_detector
             {
                 while (communicate)
                 {
-                    string tilt = string.Empty, limit = string.Empty;
+                    string tilt = string.Empty, limit = string.Empty, lowdigit = string.Empty, highdigit = string.Empty;
                     
                     if(serialPort.ReadLine() == "Start of Frame" && serialPort.IsOpen)
                     {
-                        tilt = serialPort.ReadLine();
-                        limit = serialPort.ReadLine();
-                        //lowdigit = serialPort.ReadLine();
-                        //highdigit = serialPort.ReadLine();
+                        try
+                        {
+                            tilt = serialPort.ReadLine();
+                            values.Tilt = Int16.Parse(tilt);
 
-                        // Update the UI from the main thread
-                        OnDataReceived?.Invoke(tilt, limit);                           
-                    }
-                                        
+                            limit = serialPort.ReadLine();
+                            values.Limit = Int16.Parse(limit);
+
+                            lowdigit = serialPort.ReadLine();
+                            values.Lowdigit = Int16.Parse(lowdigit);
+
+                            highdigit = serialPort.ReadLine();
+                            values.Highdigit = Int16.Parse(highdigit);
+
+                            // Update the UI from the main thread
+                            OnDataReceived?.Invoke(values);
+                        }
+                        catch(FormatException e) 
+                        {
+                            continue;
+                        }                          
+                    }                                                        
                 }
             }
             catch(TimeoutException)
