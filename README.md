@@ -41,3 +41,5 @@ virtuális UART kommunikációval valósítsa meg USB-n keresztül.
 ## Kliens alkalmazás
 ![image](https://github.com/bnyitrai03/Tilt_detector/assets/126956031/5a4a4374-b100-44cb-8df9-f57217961035)
 
+## GUI
+![image](https://github.com/bnyitrai03/Tilt_detector/assets/126956031/11d71b9b-e614-4f09-9818-c26ec121f7f1)
