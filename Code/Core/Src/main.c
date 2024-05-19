@@ -229,8 +229,8 @@ int main(void)
 			// Display the limit change for 1 sec
 			if (previous_limit != current_limit) {
 				// Disable button interrupts while displaying new limit value
-				HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+				HAL_NVIC_DisableIRQ(EXTI2_IRQn);
+				HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 
 				HAL_Delay(500);
 				// Reenable limit changing

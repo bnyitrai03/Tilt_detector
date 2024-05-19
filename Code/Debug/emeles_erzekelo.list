@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  00009074  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0001ed75  00000000  00000000  000090a4  2**0
+ 12 .debug_info   0001ed86  00000000  00000000  000090a4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00003174  00000000  00000000  00027e19  2**0
+ 13 .debug_abbrev 00003174  00000000  00000000  00027e2a  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00001b50  00000000  00000000  0002af90  2**3
+ 14 .debug_aranges 00001b50  00000000  00000000  0002afa0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00001532  00000000  00000000  0002cae0  2**0
+ 15 .debug_rnglists 00001532  00000000  00000000  0002caf0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0002431e  00000000  00000000  0002e012  2**0
+ 16 .debug_macro  0002431e  00000000  00000000  0002e022  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00019d1b  00000000  00000000  00052330  2**0
+ 17 .debug_line   00019d1b  00000000  00000000  00052340  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000dc1dd  00000000  00000000  0006c04b  2**0
+ 18 .debug_str    000dc1dd  00000000  00000000  0006c05b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  00148228  2**0
+ 19 .comment      00000043  00000000  00000000  00148238  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00007ec0  00000000  00000000  0014826c  2**2
+ 20 .debug_frame  00007ec0  00000000  00000000  0014827c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000048  00000000  00000000  0015012c  2**0
+ 21 .debug_line_str 00000048  00000000  00000000  0015013c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2262,12 +2262,12 @@ int main(void)
  8001544:	429a      	cmp	r2, r3
  8001546:	d00f      	beq.n	8001568 <main+0x22c>
 				// Disable button interrupts while displaying new limit value
-				HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+				HAL_NVIC_DisableIRQ(EXTI2_IRQn);
  8001548:	2008      	movs	r0, #8
- 800154a:	f001 fc9a 	bl	8002e82 <HAL_NVIC_EnableIRQ>
-				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+ 800154a:	f001 fca8 	bl	8002e9e <HAL_NVIC_DisableIRQ>
+				HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
  800154e:	2017      	movs	r0, #23
- 8001550:	f001 fc97 	bl	8002e82 <HAL_NVIC_EnableIRQ>
+ 8001550:	f001 fca5 	bl	8002e9e <HAL_NVIC_DisableIRQ>
 
 				HAL_Delay(500);
  8001554:	f44f 70fa 	mov.w	r0, #500	@ 0x1f4

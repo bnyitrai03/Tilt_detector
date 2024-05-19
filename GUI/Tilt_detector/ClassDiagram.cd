@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Tilt_detector.Data">
+    <Position X="8.25" Y="4.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAAAAAAAAAAACAAwAAgAMAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Data.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Tilt_detector.Mainform">
+    <Position X="0.5" Y="0.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAogAAAIACkkARIABCCAAQKCAEBAQQBACCAAAAAAAAg=</HashCode>
+      <FileName>MainForm.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="serialCom" />
+      <Field Name="DisplayLow" />
+      <Field Name="DisplayHigh" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Tilt_detector.Program" Collapsed="true">
+    <Position X="1" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Tilt_detector.Segment">
+    <Position X="8.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAgAAAAIAQAAAAEAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>Segment.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Tilt_detector.SerialCommunication">
+    <Position X="4.75" Y="4.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAQAAAAAAAAAgAAAACAAgADgAIgAAAAAAAAA=</HashCode>
+      <FileName>SerialCommunication.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="values" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Tilt_detector.SevenSegmentDisplay">
+    <Position X="4.75" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAACAAAAAAAACAIAECAAABAAAAAAQBAAAAAAA=</HashCode>
+      <FileName>SevenSegmentDisplay.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="segments" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Delegate Name="Tilt_detector.DataReceivedHandler">
+    <Position X="4.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SerialCommunication.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
