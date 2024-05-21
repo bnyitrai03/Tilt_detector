@@ -3,24 +3,28 @@
   "WorkspaceRootPath": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|e:\\egyetem\\marlab_sw\\gui\\tilt_detector\\sevensegmentdisplay.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:sevensegmentdisplay.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|e:\\egyetem\\marlab_sw\\gui\\tilt_detector\\segment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:segment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|e:\\egyetem\\marlab_sw\\gui\\tilt_detector\\data.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:data.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|e:\\egyetem\\marlab_sw\\gui\\tilt_detector\\serialcommunication.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:serialcommunication.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\sevensegmentdisplay.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:sevensegmentdisplay.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\segment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:segment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\data.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{61A583BF-9044-400B-B501-2FD8B83EBD39}|Tilt_detector.csproj|solutionrelative:data.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,24 +34,35 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
+              "Title": "MainForm.cs [Design]",
+              "DocumentMoniker": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\MainForm.cs",
+              "RelativeDocumentMoniker": "MainForm.cs",
+              "ToolTip": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\MainForm.cs [Design]",
+              "RelativeToolTip": "MainForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-19T15:12:05.436Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "SevenSegmentDisplay.cs",
               "DocumentMoniker": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\SevenSegmentDisplay.cs",
               "RelativeDocumentMoniker": "SevenSegmentDisplay.cs",
               "ToolTip": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\SevenSegmentDisplay.cs",
               "RelativeToolTip": "SevenSegmentDisplay.cs",
-              "ViewState": "AQIAABwAAAAAAAAAAAAgwAAAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-18T23:10:21.127Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-05-18T23:10:21.127Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "Segment.cs",
               "DocumentMoniker": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\Segment.cs",
               "RelativeDocumentMoniker": "Segment.cs",
@@ -55,12 +70,11 @@
               "RelativeToolTip": "Segment.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-18T23:10:02.134Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-05-18T23:10:02.134Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "Data.cs",
               "DocumentMoniker": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\Data.cs",
               "RelativeDocumentMoniker": "Data.cs",
@@ -68,31 +82,30 @@
               "RelativeToolTip": "Data.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAVAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-18T22:12:07.746Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-05-18T22:12:07.746Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "SerialCommunication.cs",
               "DocumentMoniker": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\SerialCommunication.cs",
               "RelativeDocumentMoniker": "SerialCommunication.cs",
               "ToolTip": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\SerialCommunication.cs",
               "RelativeToolTip": "SerialCommunication.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAG0AAAAcAAAA",
+              "ViewState": "AQIAADsAAAAAAAAAAAAIwEUAAAAgAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-18T14:02:24.694Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "MainForm.cs",
               "DocumentMoniker": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\MainForm.cs",
               "RelativeDocumentMoniker": "MainForm.cs",
               "ToolTip": "E:\\EGYETEM\\MARlab_sw\\GUI\\Tilt_detector\\MainForm.cs",
               "RelativeToolTip": "MainForm.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAA0AAAA",
+              "ViewState": "AQIAAAgAAAAAAAAAAAAQwE8AAAALAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-10T17:30:54.419Z",
               "EditorCaption": ""
